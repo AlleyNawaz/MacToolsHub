@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("USER") // Was Enum
+  favorites     Favorite[]
+  setups        Setup[]
+  reviews       Review[]
+  collections   Collection[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Tool {
+  id                  String   @id @default(cuid())
+  name                String
+  slug                String   @unique
+  logo                String
+  description         String
+  developer           String
+  website             String
+  github              String?
+  installCommand      String
+  installKind         String   @default("command")
+  alternativeCommands String   // Comma separated
+  platform            String   // Comma separated
+  tags                String   // Comma separated
+  difficulty          String   // Was Enum
+  
+  documentation       String   // JSON stringified
+  screenshots         String   // Comma separated
+  rating              Float    @default(0.0)
+  downloads           Int?     @default(0)
+  latestVersion       String?  @default("Tracked")
+  releaseDate         DateTime?
+  compatibility       String   @default("macOS 13 Ventura,macOS 14 Sonoma,macOS 15 Sequoia")
+  
+  categoryId          String
+  category            Category @relation(fields: [categoryId], references: [id])
+  
+  favorites           Favorite[]
+  setupTools          SetupTool[]
+  versions            Version[]
+  commands            Command[]
+  reviews             Review[]
+  collectionTools     CollectionTool[]
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  tools       Tool[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  toolId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, toolId])
+}
+
+model Setup {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  setupTools  SetupTool[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model SetupTool {
+  id        String   @id @default(cuid())
+  setupId   String
+  toolId    String
+  notes     String?
+  setup     Setup    @relation(fields: [setupId], references: [id], onDelete: Cascade)
+  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([setupId, toolId])
+}
+
+model Version {
+  id          String   @id @default(cuid())
+  version     String
+  releaseDate DateTime?
+  notes       String?
+  toolId      String
+  tool        Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([toolId, version])
+}
+
+model Command {
+  id          String   @id @default(cuid())
+  label       String
+  command     String
+  description String?
+  toolId      String
+  tool        Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  title     String?
+  body      String?
+  approved  Boolean  @default(false)
+  userId    String
+  toolId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, toolId])
+}
+
+model Collection {
+  id          String           @id @default(cuid())
+  title       String
+  slug        String           @unique
+  description String?
+  isPublic    Boolean          @default(false)
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tools       CollectionTool[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model CollectionTool {
+  id           String     @id @default(cuid())
+  collectionId String
+  toolId       String
+  notes        String?
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  tool         Tool       @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([collectionId, toolId])
+}

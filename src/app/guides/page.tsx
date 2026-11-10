@@ -1,0 +1,7 @@
+import type { Metadata } from "next"
+import Link from "next/link"
+import { ArrowRight, BookOpen } from "lucide-react"
+import { guides } from "@/data/editorial"
+
+export const metadata: Metadata = { title: "Mac setup guides", description: "Opinionated, practical guides for building excellent Mac developer workflows." }
+export default function GuidesIndex() { return <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6"><div className="max-w-3xl"><p className="text-sm font-semibold text-sky-500">FIELD GUIDES</p><h1 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">From a clean Mac to flow state.</h1><p className="mt-4 text-lg leading-8 text-muted-foreground">Practical stacks and setup sequences for real developer roles.</p></div><div className="mt-12 grid gap-5 lg:grid-cols-3">{guides.map((guide) => <Link key={guide.slug} href={`/guides/${guide.slug}`} className="group flex min-h-80 flex-col rounded-3xl border bg-card p-7 transition hover:-translate-y-1 hover:shadow-xl"><BookOpen className="size-6 text-sky-500" /><p className="mt-8 text-xs font-semibold text-sky-500">{guide.eyebrow}</p><h2 className="mt-2 text-2xl font-semibold">{guide.title}</h2><p className="mt-3 flex-1 leading-7 text-muted-foreground">{guide.description}</p><span className="mt-6 flex items-center gap-2 text-sm font-semibold">Read guide <ArrowRight className="size-4 transition group-hover:translate-x-1" /></span></Link>)}</div></div> }

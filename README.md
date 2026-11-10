@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MacTools Hub
 
-## Getting Started
+A macOS developer tool catalog with search, categories, comparisons, guides, favorites, and a setup script builder.
 
-First, run the development server:
+## Run locally
 
 ```bash
+npm ci
+npm run db:setup
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). The catalog and browser-based favorites work without a database. `npm run db:setup` is only needed for the optional local Prisma seed workflow; its SQLite file is generated at `prisma/dev.db` and is intentionally not committed.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy to Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Import this repository into Vercel and keep the detected Next.js framework, root directory, and default build settings. Vercel will install dependencies and run `npm run build`; no database or custom `vercel.json` is required for the deployed catalog.
 
-## Learn More
+After the first deployment, set `NEXT_PUBLIC_SITE_URL` in the Vercel project’s Production environment to the public site origin (for example, `https://your-project.vercel.app`) and redeploy. This sets the canonical metadata, robots.txt, and sitemap.xml URLs.
 
-To learn more about Next.js, take a look at the following resources:
+## Check the project
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run lint
+npm test
+npm run build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The build uses webpack because this project’s Tailwind/PostCSS setup currently triggers a Turbopack process binding error in restricted environments.
 
-## Deploy on Vercel
+Set `NEXT_PUBLIC_SITE_URL` to the public origin before deploying so metadata, robots.txt, and sitemap.xml use the correct URLs.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Tool commands are starting points. Review generated scripts and confirm installation steps with each tool’s official documentation before running them.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See [the UI and UX audit](docs/UI_UX_AUDIT.md) for the detailed findings and changes.
